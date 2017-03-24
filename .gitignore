@@ -1,5 +1,7 @@
 # Created by https://www.gitignore.io/api/composer,netbeans,macos,linux
 
+/config/
+
 ### Composer ###
 composer.phar
 /vendor/
@@ -58,6 +60,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-/config/config.php
+
+
 
 # End of https://www.gitignore.io/api/composer,netbeans,macos,linux
