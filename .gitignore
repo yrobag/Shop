@@ -58,6 +58,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
-/config/config.php
+
+config/config.php
 
 # End of https://www.gitignore.io/api/composer,netbeans,macos,linux
