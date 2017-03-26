@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<mysqldump xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<database name="Shop_test">
+	<table_data name="User">
+	<row>
+		<field name="id">1</field>
+		<field name="name">Tom</field>
+		<field name="surname">Black</field>
+		<field name="email">tom@black.com</field>
+		<field name="pass">$2y$10$n0/.SbWrP5HnnOiXmL2MBOl77488PJFWIzRtQxCq5QYFEsjklak/S</field>
+		<field name="address">London 13thStreet 43</field>
+	</row>
+	<row>
+		<field name="id">2</field>
+		<field name="name">Robert</field>
+		<field name="surname">White</field>
+		<field name="email">r.white@color.com</field>
+		<field name="pass">$2y$10$7Zn8YynY4O616N6pWsRihuimZr/d2oQjl9EqtE74GC689IXQIKQjS</field>
+		<field name="address">Leeds Blue Street 3</field>
+	</row>
+	<row>
+		<field name="id">3</field>
+		<field name="name">Mark</field>
+		<field name="surname">Brown</field>
+		<field name="email">brown@gmail.com</field>
+		<field name="pass">$2y$10$HmVjDAbBmUR0ic/as4W1UOaQC.x3JQXVqmkS6r1yiIGfEQtS8a6Ky</field>
+		<field name="address">Berlin Kurz Strasse 12</field>
+	</row>
+	</table_data>
+</database>
+</mysqldump>
