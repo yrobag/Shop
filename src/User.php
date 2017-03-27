@@ -12,6 +12,7 @@ class User extends DbModel
     private $pass;
     private $addres;
 
+    ////////////////////////////////////////////////////////////////////////////
     public function __construct($newId=null, $newName=null, $newSurname=null, $newEmail=null, $newAddress=null, $newPassword=null)
     {
         $this->id = $newId;
@@ -21,20 +22,7 @@ class User extends DbModel
         $this->addres = $newAddress;
         $this->pass = $newPassword;
     }
-
-// Zamiast tego jest findById z klasy abstracyjnej
-//    public static function GetUserById($id) {
-//        $sqlStatement = "Select * from Users where id = :id";
-//        $stmt = $this->getConnection()->prepare($sqlStatement);
-//        $result = $stmt->execute(['id' => $id]);
-//        if ($result->num_rows === 1) {
-//            $userData = $result->fetch_assoc();
-//            return new User($userData['id'], $userData['name'], $userData['surname'], $userData['email'], $userData['address'], $userData['pass']);
-//        }
-//        //there is user with this name in db
-//        return null;
-//    }
-
+    ////////////////////////////////////////////////////////////////////////////
     public static function CreateUser($email, $password, $name, $surname, $address)
     {
         $sqlStatement = "Select * from User where email = :email";
@@ -98,7 +86,7 @@ class User extends DbModel
             return true;
         }
     }
-
+    ////////////////////////////////////////////////////////////////////////////
     public function authenticate($password)
     {
         $hashed_pass = $this->pass;
@@ -125,16 +113,8 @@ class User extends DbModel
             return true;
         }
     }
-
-    public function setNewPass($newPass, $oldPass)
-    {
-        if ($this->authenticate($oldPass)) {
-            $this->pass = password_hash($newPass, PASSWORD_BCRYPT);
-            return true;
-        }
-        return false;
-    }
-
+   
+    ////////////////////////////////////////////////////////////////////////////
     public function getId()
     {
         return $this->id;
@@ -159,7 +139,7 @@ class User extends DbModel
     {
         return $this->addres;
     }
-
+    ///////////////////////////////////////////////////////////////////////////
     public function setEmail($email)
     {
         //Must check if new email is not id DB
@@ -170,6 +150,15 @@ class User extends DbModel
         if ($stmt->rowCount() == 0) {
             $this->email = $email;
         }
+    }
+    
+     public function setNewPass($newPass, $oldPass)
+    {
+        if ($this->authenticate($oldPass)) {
+            $this->pass = password_hash($newPass, PASSWORD_BCRYPT);
+            return true;
+        }
+        return false;
     }
 
     public function setName($name)
@@ -186,7 +175,7 @@ class User extends DbModel
     {
         $this->addres = $addres;
     }
-
+    ////////////////////////////////////////////////////////////////////////////
 
 
 }
