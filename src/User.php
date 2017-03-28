@@ -11,7 +11,7 @@ class User extends DbModel
     private $surname;
     private $pass;
     private $addres;
-
+    
     ////////////////////////////////////////////////////////////////////////////
     public function __construct($newId=null, $newName=null, $newSurname=null, $newEmail=null, $newAddress=null, $newPassword=null)
     {
@@ -139,6 +139,18 @@ class User extends DbModel
     {
         return $this->addres;
     }
+    
+    /**
+     * Metoda zwraca wszystkie wiadomości wysłane do użytkownika
+     * @return array
+     */
+    public function getAllMessagesSentToUser()
+    {
+        $messages = [];
+        
+        return $messages;
+    }
+    
     ///////////////////////////////////////////////////////////////////////////
     public function setEmail($email)
     {
