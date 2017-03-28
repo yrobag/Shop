@@ -119,6 +119,17 @@ class Order extends DbModel
     {
         return $this->totalPrice;
     }
+    
+    /**
+     * Metoda zwraca wszystkie wiadomości wysłane w związku z tym zamówieniem
+     * @return array
+     */
+    public function getAllMessagesSentInThisOrder()
+    {
+        $messages = [];
+        
+        return $messages;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
 
