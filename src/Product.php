@@ -157,7 +157,7 @@ class Product extends DbModel
         } else {
             //Updating product in DB
             $stmt = $conn->prepare(
-                    'UPDATE Users SET name=:name, description=:description, price=:price, stock=:stock WHERE id=:id'
+                    'UPDATE Product SET name=:name, description=:description, price=:price, stock=:stock WHERE id=:id'
             );
 
             $result = $stmt->execute(

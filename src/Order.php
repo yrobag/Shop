@@ -52,7 +52,7 @@ class Order extends DbModel
 
     public function __construct()
     {
-        $this->id = NON_EXISTING_ID;
+        $this->id = self::NON_EXISTING_ID;
         $this->products = [];
         $this->userId = NON_EXISTING_ID;
         $this->totalPrice = (float) 0.00;
@@ -65,59 +65,93 @@ class Order extends DbModel
         if (count($this->products) > 0) {
             for ($i = 0; $i < count($this->products); $i++) {
                 if ($this->products[$i]['productId'] === $product->id) {
-                    $this->products[$i]['price']=$product->price;
-                    $this->products[$i]['quantity']+=$quantity;
+                    $this->products[$i]['price'] = $product->price;
+                    $this->products[$i]['quantity'] += $quantity;
                     return true;
                 }
             }
         }
-        $this->products[]=['productId'=>$product->id, 'price' => $product->price, 'quantity'=>$quantity];
+        $this->products[] = ['productId' => $product->id, 'price' => $product->price, 'quantity' => $quantity];
         return true;
     }
-    
+
     public function removeProduct(Product $product)
     {
         if (count($this->products) > 0) {
             for ($i = 0; $i < count($this->products); $i++) {
                 if ($this->products[$i]['productId'] === $product->id) {
                     unset($this->products[$i]);
-                    $this->products= array_values($this->products);
+                    $this->products = array_values($this->products);
+                    $this->calculateTotalPrice();
                     return true;
                 }
             }
         }
         return false;
     }
-    
-//    public function loadProducts
-//    public function saveToDB
-//    static public function calcTotalPrice
-    
 
-    ////////////////////////////////////////////////////////////////////////////
-    public function getId()
+    public function calculateTotalPrice()
     {
-        return $this->id;
+        $totalPrice = 0;
+        foreach ($this->products as $product) {
+            $totalPrice += $product['price'] * $product['quantity'];
+        }
+        $this->totalPrice = $totalPrice;
+        return $totalPrice;
     }
 
-    public function getUserId()
+    public function saveToDB()
     {
-        return $this->userId;
+        $conn = Product::getConnection();
+
+        if ($this->id == self::NON_EXISTING_ID) {
+            //Saving new order to DB
+            $stmt = $conn->prepare(
+                    'INSERT INTO Order(userId, totalPrice, status) VALUES (:userId, :totalPrice, :status)'
+            );
+
+            $result = $stmt->execute(
+                    [
+                        'userId' => $this->userId,
+                        'totalPrice' => $this->calculateTotalPrice(),
+                        'status' => self::ESTABLISHED_STATUS
+                    ]
+            );
+            //Creating new records in OrderProduct Table
+            $stmt = $conn->prepare(
+                    'INSERT INTO OrderProduct(productId, price, quantity, orderId) VALUES (:productId, :price, :quantity, :orderId)'
+            );
+            foreach ($this->products as $product) {
+                $stmt->execute(
+                        [
+                            'productId' => $product['productId'],
+                            'price' => $product['price'],
+                            'quantity' => $product['quantity'],
+                            'orderId' => $this->id
+                        ]
+                );
+            }
+
+            if ($result === true) {
+                $this->id = $conn->lastInsertId();
+                return true;
+            }
+        }
+        return false;
     }
 
-    public function getStatus()
+    public function loadAllProducts()
     {
-        return $this->status;
-    }
+        $conn = Product::getConnection();
+        $stmt = $conn->prepare(
+                'SELECT * FROM OrderProduct WHERE orderId=:id'
+        );
 
-    public function getProducts()
-    {
-        return $this->products;
-    }
-
-    public function getTotalPrice()
-    {
-        return $this->totalPrice;
+        $stmt->execute(['id' => $this->id]);
+        $products = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($products as $product){
+            $this->products[]=['productId' => $product['productId'], 'price'=>$product['price'], 'quantity'=>$product['quantity']];
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -128,15 +162,31 @@ class Order extends DbModel
         $this->userId = $userId;
     }
 
-    public function setStatus($status)
+    public function changeStatus($status)
     {
-        $possibleStatus = [WAITING_STATUS, REALIZED_STATUS, PAID_STATUS, ESTABLISHED_STATUS];
-        if (in_array($status, $possibleStatus)) {
-            $this->status = $status;
-            return true;
+        if ($this->id != self::NON_EXISTING_ID) {
+
+            $possibleStatus = [self::WAITING_STATUS, self::REALIZED_STATUS, self::PAID_STATUS, self::ESTABLISHED_STATUS];
+            if (in_array($status, $possibleStatus)) {
+                $this->status = $status;
+                $conn = Product::getConnection();
+                $stmt = $conn->prepare(
+                        'UPDATE Order SET status=:status WHERE id=:id'
+                );
+
+                $result = $stmt->execute(
+                        [
+                            'status' => $this->status,
+                            'id' => $this->id
+                        ]
+                );
+                if ($result === true) {
+                    $this->id = $conn->lastInsertId();
+                    return true;
+                }
+            }
         }
         return false;
     }
-
 
 }
